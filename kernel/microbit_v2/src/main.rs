@@ -125,6 +125,19 @@ pub struct MicroBit {
             capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52833::rtc::Rtc<'static>>,
         >,
     >,
+
+    dots_text_display: &'static drivers::dots_text_display::DotsTextDisplay<
+        // 'a
+        'static,
+        // L 
+        capsules::led_matrix::LedMatrixLed<
+            'static,
+            nrf52::gpio::GPIOPin<'static>,
+            capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52833::rtc::Rtc<'static>>,
+        >,
+        // A
+        capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
+    >,
 }
 
 impl SyscallDriverLookup for MicroBit {
@@ -154,6 +167,7 @@ impl SyscallDriverLookup for MicroBit {
 
             // Return driver's object for Dots Display Driver
             drivers::dots_display::DRIVER_NUM => f(Some(self.dots_display)),
+            drivers::dots_text_display::DRIVER_NUM => f(Some(self.dots_text_display)),
             _ => f(None),
         }
     }
@@ -645,6 +659,37 @@ pub unsafe fn main() {
         >,
         drivers::dots_display::DotsDisplay::new(leds)
     );
+    // For text driver
+    let virtual_alarm_dots_text_display = static_init!(
+        capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52833::rtc::Rtc>,
+        capsules::virtual_alarm::VirtualMuxAlarm::new(mux_alarm)
+    );
+
+    let app_data = board_kernel.create_grant(
+        drivers::dots_text_display::DRIVER_NUM,
+        &memory_allocation_capability
+    );
+    // Alarm - TO DO
+    let dots_text_display = static_init!(
+        drivers::dots_text_display::DotsTextDisplay<
+            // 'a
+            'static,
+            // L
+            capsules::led_matrix::LedMatrixLed<
+                'static,
+                nrf52::gpio::GPIOPin<'static>,
+                capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52833::rtc::Rtc<'static>>,
+            >,
+            // A
+            capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
+        >,
+        drivers::dots_text_display::DotsTextDisplay::new(leds, virtual_alarm_dots_text_display, app_data)
+    );
+
+    // hook up the alarm callback to the driver
+    virtual_alarm_dots_text_display.set_alarm_client(dots_text_display);
+
+    //dots_text_display.set_timeout();
     
 
     // Private
@@ -675,6 +720,7 @@ pub unsafe fn main() {
 
         // Date pentru Microbit
         dots_display,
+        dots_text_display,
         hello: hello
     };
 

@@ -3,3 +3,4 @@
 
 pub mod hello;
 pub mod dots_display;
+pub mod dots_text_display;

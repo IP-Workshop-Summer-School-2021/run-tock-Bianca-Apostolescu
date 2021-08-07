@@ -1,11 +1,15 @@
 /* vim: set sw=2 expandtab tw=80: */
 
 #include <stdio.h>
+// Pentru Hello Driver
 //#include "hello.h"
 
 // Pentru Dots Display Driver
-#include <timer.h>
-#include "dots_display.h"
+// #include <timer.h>
+// #include "dots_display.h"
+
+// Pentru Dots Text Display Driver
+#include "dots_text_display.h"
 
 int main(void) {
   
@@ -54,17 +58,19 @@ int main(void) {
   
   // Pentru Dots Display Driver
 
-while (true) {
-  for (int i = 0; i < 10; i++) {
-  display_digit ('0' + i);
-  delay_ms(1000);
+  // while (true) {
+  //   for (int i = 0; i < 10; i++) {
+  //   display_digit ('0' + i);
+  //   delay_ms(1000);
+  //   }
+  // }
+
+
+  // Pentru Text Display Driver
+  while (true) {
+    display_text ("2990302410023");
   }
-}
-
-
   
-
-
-
   return 0;
+
 }
