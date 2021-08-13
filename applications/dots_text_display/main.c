@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
- Pentru Dots Text Display Driver
+ // Pentru Dots Text Display Driver
  #include "dots_text_display.h"
 
 
